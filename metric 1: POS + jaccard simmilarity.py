@@ -15,7 +15,7 @@ def jaccard_similarity(set1, set2):
     return intersection / union
 
 # list for [premise, hypothesis, label, Jaccard similarity]
-tuple = []
+prob = []
 
 # Currently done for 5 examples, but should be on whole subset
 for i in range(5):
@@ -33,13 +33,13 @@ for i in range(5):
 
     similarity = jaccard_similarity(premise_pos_tags, hypothesis_pos_tags)
 
-    tuple.append((premise, hypothesis, label, similarity))
+    prob.append((premise, hypothesis, label, similarity))
 
 # Sorting the list in decreasing order based on the similarity's real value number
 # want a list in ascending order? remove reverse=True
-tuple = sorted(tuple, key=lambda x: x[3], reverse=True)
+prob = sorted(prob, key=lambda x: x[3], reverse=True)
 # print(sorted_tuples)
 
 # The ordered list in ascending order based on the Jaccard similarity of POS tags
-ordered_list = [(premise, hypothesis, label) for premise, hypothesis, label, _ in tuple]
+ordered_list = [(premise, hypothesis, label) for premise, hypothesis, label, _ in prob]
 # print(ordered_list)
