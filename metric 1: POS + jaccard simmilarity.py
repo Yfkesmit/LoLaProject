@@ -35,6 +35,7 @@ for i in range(5):
     sorted_tuples.append((premise, hypothesis, label, similarity))
 
 # Sorting the list in decreasing order based on the similarity's real value number
+# want a list in ascending order? remove reverse=True
 sorted_tuples = sorted(sorted_tuples, key=lambda x: x[3], reverse=True)
 # print(sorted_tuples)
 
