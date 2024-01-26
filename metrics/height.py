@@ -28,6 +28,6 @@ for i in range(5):
 sorted_height = sorted(sorted_height, key=lambda x: x[3])
 # print(sorted_height)
 
-# List of the sorted 'cid'
+# List of the sorted 'cid' IF WANTED
 sorteid_height_cid = [cid for cid, _, _, _ in sorted_height]
 # print(sorteid_height_cid)
