@@ -13,7 +13,7 @@ def tree_height_metric(premise_tree_str, hypothesis_tree_str):
 # list for [cid, premise_tree_str, hypothesis_tree_str, tree_height_difference]
 sorted_height = []
 
-# Process the first 5 rows
+# Currently done for 5 examples, but should be on whole subset
 for i in range(5):
     cid = subset["cid"][i]
     premise_tree_str = subset["p_tree"][i]
