@@ -3,7 +3,7 @@ from nltk import Tree
 import pickle
 import datasets
 def relative_height(path,h_rel = True):
-    df = pd.DataFrame(pd.read_pickle("datasets\snli_subset_with_trees.pkl"))
+    df = pd.DataFrame(pd.read_pickle(path))
 
     for index,row in df.iterrows():
         df.loc[index,'p_rel'] = Tree.fromstring(df.loc[index]["p_tree"]).height()/len(df.loc[index]["premise"].split())
