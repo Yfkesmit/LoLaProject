@@ -1,47 +1,100 @@
-import spacy
 import numpy as np
-from datasets import Dataset
 from tqdm import tqdm
 
-nlp = spacy.load('en_core_web_sm')
+from nltk import Tree
+from datasets import Dataset
+from .metric_functions import tree_height_metric, jaccard_similarity, relative_height_metric
+from .utils import tokenize
 
-# Jaccard similarity function
-def jaccard_similarity(set1, set2):
-    intersection = len(set1.intersection(set2))
-    union = len(set1.union(set2))
-    return intersection / union
-
-def sort_on_pos_jaccard_similarity(data):
-    # list for [premise, hypothesis, label, Jaccard similarity]
-    prob = []
-
-    for i in tqdm(range(len(data['premise'])), desc="Sorting on POS Jaccard Similarity"):
-        premise = data['premise'][i]
-        hypothesis = data['hypothesis'][i]
-        label = data['label'][i]
-
-        # Finding the POS tags for the sentences
-        premise_doc = nlp(premise)
-        hypothesis_doc = nlp(hypothesis)
-
-        # Extracting the POS tags for premise and hypothesis
-        premise_pos_tags = set([token.pos_ for token in premise_doc])
-        hypothesis_pos_tags = set([token.pos_ for token in hypothesis_doc])
-
-        similarity = jaccard_similarity(premise_pos_tags, hypothesis_pos_tags)
-
-        prob.append((premise, hypothesis, label, similarity))
-
-    # Sorting the list in decreasing order based on the similarity's real value number
-    prob = sorted(prob, key=lambda x: x[3], reverse=True)
-
-    # The ordered list in ascending order based on the Jaccard similarity of POS tags
-    ordered_list = [(premise, hypothesis, label) for premise, hypothesis, label, _ in prob]
-
+def sort_on_tree_height_difference(data, reverse=False):
+    tree_height_differences = [tree_height_metric(p, h) for p, h in tqdm(zip(data['premise'], data['hypothesis']), desc="Sorting on tree height difference")]
+    sorted_indices = np.argsort(tree_height_differences)[::-1] if reverse else np.argsort(tree_height_differences)
     sorted_data = {
-        'premise': np.array([item[0] for item in ordered_list]),
-        'hypothesis': np.array([item[1] for item in ordered_list]),
-        'label': np.array([item[2] for item in ordered_list]),
+        'premise': np.array(data['premise'])[sorted_indices],
+        'hypothesis': np.array(data['hypothesis'])[sorted_indices],
+        'label': np.array(data['label'])[sorted_indices]
+        # 'tree_height_difference': np.array(tree_height_differences)[sorted_indices]
+    }
+    return Dataset.from_dict(sorted_data)
+
+def sort_on_jaccard_similarity(data, reverse=False):
+    premise_tokens = [tokenize(p) for p in data['premise']]
+    hypothesis_tokens = [tokenize(h) for h in data['hypothesis']]
+    
+    jaccard_similarities = [jaccard_similarity(set1, set2) for set1, set2 in tqdm(zip(premise_tokens, hypothesis_tokens), desc="Sorting on Jaccard similarity")]
+    
+    sorted_indices = np.argsort(jaccard_similarities)[::-1] if reverse else np.argsort(jaccard_similarities)
+    
+    sorted_data = {
+        'premise': np.array(data['premise'])[sorted_indices],
+        'hypothesis': np.array(data['hypothesis'])[sorted_indices],
+        'label': np.array(data['label'])[sorted_indices],
+        # 'jaccard_similarity': np.array(jaccard_similarities)[sorted_indices],
+    }
+    
+    return Dataset.from_dict(sorted_data)
+
+def sort_on_jaccard_similarity_pos(data, reverse=False):
+    data_list = data.to_dict()
+    # Create a new column for POS tags in your dataset
+    data_list['premise_pos_tags'] = [[pos for _, pos in Tree.fromstring(p).pos()] for p in data_list['p_tree']]
+    data_list['hypothesis_pos_tags'] = [[pos for _, pos in Tree.fromstring(h).pos()] for h in data_list['h_tree']]    
+    jaccard_similarities = [jaccard_similarity(set1, set2) for set1, set2 in tqdm(zip(data_list['premise_pos_tags'], data_list['hypothesis_pos_tags']), desc="Sorting on Jaccard similarity, pos")]
+    sorted_indices = np.argsort(jaccard_similarities)[::-1] if reverse else np.argsort(jaccard_similarities)
+    sorted_data = {
+        'premise': np.array(data['premise'])[sorted_indices],
+        'hypothesis': np.array(data['hypothesis'])[sorted_indices],
+        'label': np.array(data['label'])[sorted_indices],
+        # 'jaccard_similarity': np.array(jaccard_similarities)[sorted_indices],
+    }
+    return Dataset.from_dict(sorted_data)
+
+def relative_height_by_hypothesis(data, reverse=False):
+    relative_heights = [relative_height_metric(h_tree, hypothesis)
+                        for h_tree, hypothesis in tqdm(zip(data['h_tree'], data['hypothesis']), desc="Calculating relative height by hypothesis")]
+
+    sorted_indices = np.argsort(relative_heights)[::-1] if reverse else np.argsort(relative_heights)
+    sorted_data = {
+        'premise': np.array(data['premise'])[sorted_indices],
+        'hypothesis': np.array(data['hypothesis'])[sorted_indices],
+        'label': np.array(data['label'])[sorted_indices],
+        # 'relative_heights': np.array(relative_heights)[sorted_indices],
+    }
+    return Dataset.from_dict(sorted_data)
+
+def relative_height_by_premise(data, reverse=False):
+    relative_heights = [relative_height_metric(p_tree, premise)
+                        for p_tree, premise in tqdm(zip(data['p_tree'], data['premise']), desc="Calculating relative height by premise")]
+
+    sorted_indices = np.argsort(relative_heights)[::-1] if reverse else np.argsort(relative_heights)
+    sorted_data = {
+        'premise': np.array(data['premise'])[sorted_indices],
+        'hypothesis': np.array(data['hypothesis'])[sorted_indices],
+        'label': np.array(data['label'])[sorted_indices],
+        # 'relative_heights': np.array(relative_heights)[sorted_indices],
+    }
+    return Dataset.from_dict(sorted_data)
+
+def relative_height_by_difference(data, reverse=False):
+    relative_heights = [
+        abs(relative_height_metric(p_tree, premise) - relative_height_metric(h_tree, hypothesis))
+        for p_tree, h_tree, premise, hypothesis in tqdm(zip(data['p_tree'], data['h_tree'], data['premise'], data['hypothesis']), desc="Calculating relative height by difference")]
+
+    sorted_indices = np.argsort(relative_heights)[::-1] if reverse else np.argsort(relative_heights)
+    sorted_data = {
+        'premise': np.array(data['premise'])[sorted_indices],
+        'hypothesis': np.array(data['hypothesis'])[sorted_indices],
+        'label': np.array(data['label'])[sorted_indices],
+        # 'relative_heights': np.array(relative_heights)[sorted_indices],
+    }
+    return Dataset.from_dict(sorted_data)
+
+def no_sorting(data, reverse=False):
+    indices = slice(None, None, -1) if reverse else slice(None, None, None)
+    data_dict = {
+        'premise': np.array(data['premise'])[indices],
+        'hypothesis': np.array(data['hypothesis'])[indices],
+        'label': np.array(data['label'])[indices]
     }
 
-    return Dataset.from_dict(sorted_data)
+    return Dataset.from_dict(data_dict)
