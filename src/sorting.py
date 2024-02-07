@@ -49,36 +49,52 @@ def sort_on_jaccard_similarity_pos(data, reverse=False):
     }
     return Dataset.from_dict(sorted_data)
 
-def relative_height_by_hypothesis(data, reverse=False):
-    relative_heights = [relative_height_metric(h_tree, hypothesis)
-                        for h_tree, hypothesis in tqdm(zip(data['h_tree'], data['hypothesis']), desc="Calculating relative height by hypothesis")]
+# These two fuinctions are no longer used
 
-    sorted_indices = np.argsort(relative_heights)[::-1] if reverse else np.argsort(relative_heights)
-    sorted_data = {
-        'premise': np.array(data['premise'])[sorted_indices],
-        'hypothesis': np.array(data['hypothesis'])[sorted_indices],
-        'label': np.array(data['label'])[sorted_indices],
-        # 'relative_heights': np.array(relative_heights)[sorted_indices],
-    }
-    return Dataset.from_dict(sorted_data)
+# def relative_height_by_hypothesis(data, reverse=False):
+#     relative_heights = [relative_height_metric(h_tree, hypothesis)
+#                         for h_tree, hypothesis in tqdm(zip(data['h_tree'], data['hypothesis']), desc="Calculating relative height by hypothesis")]
 
-def relative_height_by_premise(data, reverse=False):
-    relative_heights = [relative_height_metric(p_tree, premise)
-                        for p_tree, premise in tqdm(zip(data['p_tree'], data['premise']), desc="Calculating relative height by premise")]
+#     sorted_indices = np.argsort(relative_heights)[::-1] if reverse else np.argsort(relative_heights)
+#     sorted_data = {
+#         'premise': np.array(data['premise'])[sorted_indices],
+#         'hypothesis': np.array(data['hypothesis'])[sorted_indices],
+#         'label': np.array(data['label'])[sorted_indices],
+#         # 'relative_heights': np.array(relative_heights)[sorted_indices],
+#     }
+#     return Dataset.from_dict(sorted_data)
 
-    sorted_indices = np.argsort(relative_heights)[::-1] if reverse else np.argsort(relative_heights)
-    sorted_data = {
-        'premise': np.array(data['premise'])[sorted_indices],
-        'hypothesis': np.array(data['hypothesis'])[sorted_indices],
-        'label': np.array(data['label'])[sorted_indices],
-        # 'relative_heights': np.array(relative_heights)[sorted_indices],
-    }
-    return Dataset.from_dict(sorted_data)
+# def relative_height_by_premise(data, reverse=False):
+#     relative_heights = [relative_height_metric(p_tree, premise)
+#                         for p_tree, premise in tqdm(zip(data['p_tree'], data['premise']), desc="Calculating relative height by premise")]
+
+#     sorted_indices = np.argsort(relative_heights)[::-1] if reverse else np.argsort(relative_heights)
+#     sorted_data = {
+#         'premise': np.array(data['premise'])[sorted_indices],
+#         'hypothesis': np.array(data['hypothesis'])[sorted_indices],
+#         'label': np.array(data['label'])[sorted_indices],
+#         # 'relative_heights': np.array(relative_heights)[sorted_indices],
+#     }
+#     return Dataset.from_dict(sorted_data)
 
 def relative_height_by_difference(data, reverse=False):
     relative_heights = [
         abs(relative_height_metric(p_tree, premise) - relative_height_metric(h_tree, hypothesis))
         for p_tree, h_tree, premise, hypothesis in tqdm(zip(data['p_tree'], data['h_tree'], data['premise'], data['hypothesis']), desc="Calculating relative height by difference")]
+
+    sorted_indices = np.argsort(relative_heights)[::-1] if reverse else np.argsort(relative_heights)
+    sorted_data = {
+        'premise': np.array(data['premise'])[sorted_indices],
+        'hypothesis': np.array(data['hypothesis'])[sorted_indices],
+        'label': np.array(data['label'])[sorted_indices],
+        # 'relative_heights': np.array(relative_heights)[sorted_indices],
+    }
+    return Dataset.from_dict(sorted_data)
+
+def relative_height_by_sum(data, reverse=False):
+    relative_heights = [
+        (relative_height_metric(p_tree, premise) + relative_height_metric(h_tree, hypothesis))
+        for p_tree, h_tree, premise, hypothesis in tqdm(zip(data['p_tree'], data['h_tree'], data['premise'], data['hypothesis']), desc="Calculating relative height by sum")]
 
     sorted_indices = np.argsort(relative_heights)[::-1] if reverse else np.argsort(relative_heights)
     sorted_data = {
