@@ -1,5 +1,5 @@
 # Curriculum Learning for NLI
-This repository contains the dataset and code used in the paper wrote by Yfke Smit, Sarah Abdalla and Tomás Pires Iken for the UU Logic and Language course in Block 2, Academic Year 2023-2024. The associated paper can be found here (insert link to paper on github)
+This repository contains the dataset and code used in the paper wrote by Yfke Smit, Sarah Abdalla and Tomás Pires Iken for the UU Logic and Language course in Block 2, Academic Year 2023-2024. The associated paper can be found [here](https://github.com/Yfkesmit/LoLaProject/blob/main/docs/Exploring_CL_in_NLI.pdf)
 
 The code consists of two parts: the creation of the subset used for training, and the ordering functions that are applied on the subset before training. Associated are two notebooks that contain examples of how to work with the code provided in this repository.
 
@@ -7,7 +7,7 @@ Notebooks:
 
 Subset Creation: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/gist/Yfkesmit/7631bee424fe233ff6947cb691693853/create_subset.ipynb)
 
-
+Smart Orderings: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/gist/Yfkesmit/1cf984d83abb1d3c5601a96e163e19a2/smart_orderings.ipynb)
 
 ## Subset Creation
 The subset was created in the following way:
