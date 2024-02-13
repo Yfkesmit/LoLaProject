@@ -1,7 +1,7 @@
 from datasets import Dataset, DatasetDict
 import pandas as pd
 
-def format_snli_dataset(train_data):
+def format_snli_train_dataset(train_data):
     # Training set
     train_data = train_data[train_data.gold_label != "-"]
     # this line removes all opther columns besides the three used for training
