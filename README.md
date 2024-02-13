@@ -4,7 +4,9 @@ This repository contains the dataset and code used in the paper wrote by Yfke Sm
 The code consists of two parts: the creation of the subset used for training, and the ordering functions that are applied on the subset before training. Associated are two notebooks that contain examples of how to work with the code provided in this repository.
 
 Notebooks:
-<script src="https://gist.github.com/Yfkesmit/7631bee424fe233ff6947cb691693853.js"></script>
+
+Subset Creation: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]([PASTE_YOUR_COLAB_NOTEBOOK_LINK_HERE](https://gist.github.com/Yfkesmit/7631bee424fe233ff6947cb691693853))
+
 
 ## Subset Creation
 The subset was created in the following way:
