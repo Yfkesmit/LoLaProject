@@ -27,7 +27,7 @@ def format_snli_train_dataset(train_data):
 
 def format_snli_dataset(path):
     # Training set
-    train_data = pd.read_json(f"{path}\snli_1.0_train.jsonl", lines=True)
+    train_data = pd.read_json(f"{path}/snli_1.0_train.jsonl", lines=True)
     train_data = train_data[train_data.gold_label != "-"]
     # this line removes all opther columns besides the three used for training
     train_data = train_data[["sentence1", "sentence2", "gold_label"]]
@@ -44,7 +44,7 @@ def format_snli_dataset(path):
     train_data = Dataset.from_dict(train_data)
 
     # Test set
-    test_data = pd.read_json(f"{path}\snli_1.0_test.jsonl", lines=True)
+    test_data = pd.read_json(f"{path}/snli_1.0_test.jsonl", lines=True)
     test_data = test_data[test_data.gold_label != "-"]
     # this line removes all opther columns besides the three used for training
     test_data = test_data[["sentence1", "sentence2", "gold_label"]]
@@ -61,7 +61,7 @@ def format_snli_dataset(path):
     test_data = Dataset.from_dict(test_data)
 
     # Validation set
-    val_data = pd.read_json(f"{path}\snli_1.0_dev.jsonl", lines=True)
+    val_data = pd.read_json(f"{path}/snli_1.0_dev.jsonl", lines=True)
     val_data = val_data[val_data.gold_label != "-"]
     # this line removes all opther columns besides the three used for training
     val_data = val_data[["sentence1", "sentence2", "gold_label"]]
