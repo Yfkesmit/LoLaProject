@@ -2,6 +2,7 @@ import string
 import numpy as np
 
 from datasets import Dataset
+
 from functools import partial
 from tqdm import tqdm
 tqdm = partial(tqdm, position=0, leave=True)
@@ -14,7 +15,6 @@ def tokenize(text):
 def sort_on_triplets(caption_dict, reverse):
     mean_dict = {cid: np.mean([score[0] for score in scores]) for cid, scores in caption_dict.items()}
 
-    # Sorting based on mean_tree_height_difference
     sorted_indices = np.argsort(list(mean_dict.values()))[::-1] if reverse else np.argsort(list(mean_dict.values()))
 
     sorted_data = {

@@ -14,7 +14,6 @@ def split_into_subsets(data, subset_size=50001):
     pid_array = data['pid']
 
     for i in range(0, len(premise_array), subset_size):
-        print(i)
         subset = {
             'premise': premise_array[i:i+subset_size],
             'hypothesis': hypothesis_array[i:i+subset_size],
@@ -36,7 +35,6 @@ def split_into_subsets(data, subset_size=50001):
 
         subset = {key: [subset[key][index] for index in valid_indices] for key in subset.keys()}
         
-        # Append the adjusted subset
         subsets.append(Dataset.from_dict(subset))
 
     return subsets
