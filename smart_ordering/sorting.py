@@ -38,7 +38,6 @@ def sort_on_jaccard_similarity(data, reverse=False):
 
 def sort_on_jaccard_similarity_pos(data, reverse=False):
     data_list = data.to_dict()
-    # Create a new column for POS tags in your dataset
     data_list['premise_pos_tags'] = [[pos for _, pos in Tree.fromstring(p).pos()] for p in data_list['p_tree']]
     data_list['hypothesis_pos_tags'] = [[pos for _, pos in Tree.fromstring(h).pos()] for h in data_list['h_tree']]    
     jaccard_similarities = [jaccard_similarity(set1, set2) for set1, set2 in tqdm(zip(data_list['premise_pos_tags'], data_list['hypothesis_pos_tags']), desc="Sorting on Jaccard similarity, pos")]

@@ -11,7 +11,7 @@ from functools import partial
 from tqdm import tqdm
 tqdm = partial(tqdm, position=0, leave=True)
 
-def sort_on_tree_height_difference_mean(data, reverse=False):
+def sort_on_tree_height_difference(data, reverse=False):
     caption_ids = defaultdict(list)
     for premise, hypothesis, label, cid, pid, p_tree, h_tree in tqdm(zip(data['premise'], data['hypothesis'],data['label'], data['cid'], data['pid'],data['p_tree'], data['h_tree']), desc="Collecting tree height differences per captionID"):
         diff = tree_height_metric(p_tree, h_tree)
@@ -21,7 +21,7 @@ def sort_on_tree_height_difference_mean(data, reverse=False):
     return res
 
 
-def sort_on_jaccard_similarity_mean(data, reverse=False):
+def sort_on_jaccard_similarity(data, reverse=False):
     premise_tokens = [tokenize(p) for p in data['premise']]
     hypothesis_tokens = [tokenize(h) for h in data['hypothesis']]
     
@@ -33,9 +33,9 @@ def sort_on_jaccard_similarity_mean(data, reverse=False):
     res = sort_on_triplets(caption_ids, reverse)
     return res
 
-def sort_on_jaccard_similarity_pos_mean(data, reverse=False):
+def sort_on_jaccard_similarity_pos(data, reverse=False):
     data = data.to_dict()
-    # Create a new column for POS tags in your dataset
+    # Create a new column for POS tags in the dataset
     data['p_pos'] = [[pos for _, pos in Tree.fromstring(p).pos()] for p in data['p_tree']]
     data['h_pos'] = [[pos for _, pos in Tree.fromstring(h).pos()] for h in data['h_tree']]
 
@@ -48,7 +48,7 @@ def sort_on_jaccard_similarity_pos_mean(data, reverse=False):
     return res
 
 
-def relative_height_by_difference_mean(data, reverse=False):
+def relative_height_by_difference(data, reverse=False):
     caption_ids = defaultdict(list)
     for p_tree, h_tree, p, h, label, cid, pid in tqdm(zip(data['p_tree'], data['h_tree'], data['premise'], data['hypothesis'], data['label'], data['cid'], data['pid']), desc="Calculating relative height by difference"):
         relative_heights = abs(relative_height_metric(p_tree, p) - relative_height_metric(h_tree, h))        
@@ -58,7 +58,7 @@ def relative_height_by_difference_mean(data, reverse=False):
     return res
 
 
-def relative_height_by_sum_mean(data, reverse=False):
+def relative_height_by_sum(data, reverse=False):
     caption_ids = defaultdict(list)
     for p_tree, h_tree, p, h, label, cid, pid in tqdm(zip(data['p_tree'], data['h_tree'], data['premise'], data['hypothesis'], data['label'], data['cid'], data['pid']), desc="Calculating relative height by sum"):
         relative_heights = (relative_height_metric(p_tree, p) + relative_height_metric(h_tree, h))        
