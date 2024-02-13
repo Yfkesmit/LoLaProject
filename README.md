@@ -5,7 +5,8 @@ The code consists of two parts: the creation of the subset used for training, an
 
 Notebooks:
 
-Subset Creation: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]([PASTE_YOUR_COLAB_NOTEBOOK_LINK_HERE](https://gist.github.com/Yfkesmit/7631bee424fe233ff6947cb691693853))
+Subset Creation: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/gist/Yfkesmit/7631bee424fe233ff6947cb691693853/create_subset.ipynb)
+
 
 
 ## Subset Creation

@@ -1,2 +1,0 @@
-[[:space:]]*.jsonl filter=lfs diff=lfs merge=lfs -text
-datasets/snli_1.0_train.jsonl filter=lfs diff=lfs merge=lfs -text
