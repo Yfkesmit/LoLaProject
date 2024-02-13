@@ -1,41 +1,82 @@
-from collections import Counter
-import numpy as np
-from datasets import Dataset
+from datasets import Dataset, DatasetDict
+import pandas as pd
 
-def split_into_subsets(data, subset_size=50001):
-    subsets = []
-    
-    # Convert lists to numpy arrays for faster indexing
-    premise_array = np.array(data['premise'])
-    hypothesis_array = np.array(data['hypothesis'])
-    label_array = np.array(data['label'])
-    p_tree_array = np.array(data['p_tree'])
-    h_tree_array = np.array(data['h_tree'])
-    cid_array = np.array(data['cid'])
-
-    for i in range(0, len(premise_array), subset_size):
-        print(i)
-        subset = {
-            'premise': premise_array[i:i+subset_size].tolist(),
-            'hypothesis': hypothesis_array[i:i+subset_size].tolist(),
-            'label': label_array[i:i+subset_size].tolist(),
-            'p_tree': p_tree_array[i:i+subset_size].tolist(),
-            'h_tree': h_tree_array[i:i+subset_size].tolist(),
-            'cid': cid_array[i:i+subset_size].tolist()
+def format_snli_dataset(train_data):
+    # Training set
+    train_data = train_data[train_data.gold_label != "-"]
+    # this line removes all opther columns besides the three used for training
+    train_data = train_data.rename(
+        columns={
+            "sentence1": "premise",
+            "sentence2": "hypothesis",
+            "gold_label": "label",
+            "captionID": "cid",
+            "pairID": "pid",
+            "sentence1_parse": "p_tree",
+            "sentence2_parse": "h_tree"
         }
+    )
+    # this line removes all other columns besides the ones used for training
+    train_data = train_data[["premise", "hypothesis", "label", "cid", "pid", "p_tree", "h_tree"]]
 
-        # Count occurrences of each 'cid' in the subset
-        cid_counter = Counter(subset['cid'])
-        
-        # Identify cids occurring that are dividable by three
-        valid_cids = {cid for cid, count in cid_counter.items() if count % 3 == 0}
-        
-        # Filter subset to keep only rows with valid cids
-        valid_indices = [index for index, cid in enumerate(subset['cid']) if cid in valid_cids]
+    train_data.loc[train_data["label"] == "neutral", "label"] = 1
+    train_data.loc[train_data["label"] == "contradiction", "label"] = 2
+    train_data.loc[train_data["label"] == "entailment", "label"] = 0
+    train_data = Dataset.from_dict(train_data)
+    return train_data
 
-        subset = {key: [subset[key][index] for index in valid_indices] for key in subset.keys()}
-        
-        # Append the adjusted subset
-        subsets.append(Dataset.from_dict(subset))
+def format_snli_dataset(path):
+    # Training set
+    train_data = pd.read_json(f"{path}\snli_1.0_train.jsonl", lines=True)
+    train_data = train_data[train_data.gold_label != "-"]
+    # this line removes all opther columns besides the three used for training
+    train_data = train_data[["sentence1", "sentence2", "gold_label"]]
+    train_data = train_data.rename(
+        columns={
+            "sentence1": "premise",
+            "sentence2": "hypothesis",
+            "gold_label": "label",
+        }
+    )
+    train_data.loc[train_data["label"] == "neutral", "label"] = 1
+    train_data.loc[train_data["label"] == "contradiction", "label"] = 2
+    train_data.loc[train_data["label"] == "entailment", "label"] = 0
+    train_data = Dataset.from_dict(train_data)
 
-    return subsets
+    # Test set
+    test_data = pd.read_json(f"{path}\snli_1.0_test.jsonl", lines=True)
+    test_data = test_data[test_data.gold_label != "-"]
+    # this line removes all opther columns besides the three used for training
+    test_data = test_data[["sentence1", "sentence2", "gold_label"]]
+    test_data = test_data.rename(
+        columns={
+            "sentence1": "premise",
+            "sentence2": "hypothesis",
+            "gold_label": "label",
+        }
+    )
+    test_data.loc[test_data["label"] == "neutral", "label"] = 1
+    test_data.loc[test_data["label"] == "contradiction", "label"] = 2
+    test_data.loc[test_data["label"] == "entailment", "label"] = 0
+    test_data = Dataset.from_dict(test_data)
+
+    # Validation set
+    val_data = pd.read_json(f"{path}\snli_1.0_dev.jsonl", lines=True)
+    val_data = val_data[val_data.gold_label != "-"]
+    # this line removes all opther columns besides the three used for training
+    val_data = val_data[["sentence1", "sentence2", "gold_label"]]
+    val_data = val_data.rename(
+        columns={
+            "sentence1": "premise",
+            "sentence2": "hypothesis",
+            "gold_label": "label",
+        }
+    )
+    val_data.loc[val_data["label"] == "neutral", "label"] = 1
+    val_data.loc[val_data["label"] == "contradiction", "label"] = 2
+    val_data.loc[val_data["label"] == "entailment", "label"] = 0
+    val_data = Dataset.from_dict(val_data)
+
+    return DatasetDict(
+        {"test": test_data, "train": train_data, "validation": val_data}
+    )

@@ -1,10 +1,12 @@
 import numpy as np
-from tqdm import tqdm
-
 from nltk import Tree
 from datasets import Dataset
 from .metric_functions import tree_height_metric, jaccard_similarity, relative_height_metric
 from .utils import tokenize
+
+from functools import partial
+from tqdm import tqdm
+tqdm = partial(tqdm, position=0, leave=True)
 
 def sort_on_tree_height_difference(data, reverse=False):
     tree_height_differences = [tree_height_metric(p, h) for p, h in tqdm(zip(data['premise'], data['hypothesis']), desc="Sorting on tree height difference")]
